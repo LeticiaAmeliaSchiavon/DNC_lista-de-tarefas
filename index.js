@@ -4,12 +4,29 @@ let tasks = [
     {id: 3, description: 'fazer o almoço', checked: false},
 ]
 
+const removeTask = (taskId) => {
+    tasks = tasks.filter(({ id }) => parseInt(id) !== parseInt(taskId));
+
+    document
+        .getElementById('todo-list')
+        .removeChild(document.getElementById(taskId));
+}
+
 const createTaskListItem = (task, checkbox) => {
     const list = document.getElementById('todo-list');
     const toDo = document.createElement('li');
 
+    const removeTaskButton = document.createElement('button');
+    removeTaskButton.textContent = 'x';
+    removeTaskButton.setAttribute('aria-label', 'Remover Tarefa');
+
+
+    removeTaskButton.onclick = () => removeTask(task.id);
+
     toDo.id = task.id;
     toDo.appendChild(checkbox);
+    toDo.appendChild(removeTaskButton);
+
     list.appendChild(toDo);
 
     return toDo;
@@ -50,9 +67,7 @@ const getNewTaskData = (event) => {
 
 const createTask = (event) => {
     event.preventDefault();
-
     const newTaskData = getNewTaskData(event);
-    //const {id, description} = newTaskData;
 
     const checkbox = getCheckboxInput(newTaskData);
     createTaskListItem(newTaskData, checkbox);
@@ -71,11 +86,11 @@ window.onload = function() {
 
         const list = document.getElementById('todo-list');
         const toDo = document.createElement('li');
-        //const button = document.createElement('button');
+        const button = document.createElement('button');
 
         toDo.id = task.id;
         toDo.appendChild(checkbox);
-        //toDo.appendChild(button);
+        toDo.appendChild(button);
 
         list.appendChild(toDo);
     })
