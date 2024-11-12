@@ -12,14 +12,27 @@ const removeTask = (taskId) => {
         .removeChild(document.getElementById(taskId));
 }
 
+const removeDoneTasks = () => {
+    const tasksToRemove = tasks
+        .filter(({ checked }) => checked)
+        .map(({ id }) => id)
+    
+    tasks = tasks.filter(({ checked }) => !checked);
+
+    tasksToRemove.forEach((taskToRemove) => {
+        document
+            .getElementById('todo-list')
+            .removeChild(document.getElementById(taskToRemove))
+    })
+}
+
 const createTaskListItem = (task, checkbox) => {
     const list = document.getElementById('todo-list');
     const toDo = document.createElement('li');
 
     const removeTaskButton = document.createElement('button');
     removeTaskButton.textContent = 'x';
-    removeTaskButton.setAttribute('aria-label', 'Remover Tarefa');
-
+    removeTaskButton.ariaLabel = 'Remover tarefa';
 
     removeTaskButton.onclick = () => removeTask(task.id);
 
@@ -32,15 +45,26 @@ const createTaskListItem = (task, checkbox) => {
     return toDo;
 }
 
-const getCheckboxInput = ({id, description, checked}) => {
+const onCheckboxClick = (event) => {
+    const [id] = event.target.id.split('-');
+
+    tasks = tasks.map((task) => {
+        return (parseInt(task.id) === parseInt(id)) 
+        ? { ...task, checked: event.target.checked }
+        : task
+    })
+}
+
+const getCheckboxInput = ({ id, description, checked }) => {
     const checkbox = document.createElement('input');
     const label = document.createElement('label');
     const wrapper = document.createElement('div');
-    const checkboxId = `${id}=checkbox`
+    const checkboxId = `${id}-checkbox`;
 
     checkbox.type = 'checkbox';
-    checkbox.id = checkboxId;
+    checkbox.id = checkboxId
     checkbox.checked = checked || false;
+    checkbox.addEventListener('change', onCheckboxClick)
 
     label.textContent = description;
     label.htmlFor = checkboxId;
@@ -54,7 +78,7 @@ const getCheckboxInput = ({id, description, checked}) => {
 }
 
 const getNewTaskId = () => {
-    const lastId = tasks[tasks.length -1]?.id;
+    const lastId = tasks[tasks.length - 1]?.id;
     return lastId ? lastId + 1 : 1;
 }
 
@@ -62,7 +86,7 @@ const getNewTaskData = (event) => {
     const description =  event.target.elements.description.value;
     const id = getNewTaskId();
 
-    return {description, id}
+    return { description, id }
 }
 
 const createTask = (event) => {
@@ -83,15 +107,18 @@ window.onload = function() {
 
     tasks.forEach((task) => {
         const checkbox = getCheckboxInput(task);
-
         const list = document.getElementById('todo-list');
         const toDo = document.createElement('li');
         const button = document.createElement('button');
+
+        button.textContent = 'x';
+        button.ariaLabel = 'Remover tarefa';
+        button.onclick = () => removeTask(task.id);
 
         toDo.id = task.id;
         toDo.appendChild(checkbox);
         toDo.appendChild(button);
 
         list.appendChild(toDo);
-    })
-}
+    });
+};
