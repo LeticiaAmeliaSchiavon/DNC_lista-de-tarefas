@@ -100,9 +100,16 @@ const getNewTaskData = (event) => {
     return { description, id }
 }
 
-const createTask = (event) => {
+const getCreatedTeskInfo = (event) => new Promise((resolve) => {
+    setTimeout(() => {
+        resolve(getNewTaskData(event))
+    }, 3000)
+}) 
+
+const createTask = async (event) => {
     event.preventDefault();
-    const newTaskData = getNewTaskData(event);
+    document.getElementById('save-task').setAttribute('disabled', true)
+    const newTaskData = await getNewTaskData(event);
 
     const checkbox = getCheckboxInput(newTaskData);
     createTaskListItem(newTaskData, checkbox);
@@ -115,6 +122,7 @@ const createTask = (event) => {
     setTasksInLocalStorage(updatedTasks)
 
     document.getElementById('description').value = ''
+    document.getElementById('save-task').removeAttribute('disabled')
 }
 
 window.onload = function() {
